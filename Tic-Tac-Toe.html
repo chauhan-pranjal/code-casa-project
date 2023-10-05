@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: white;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: sans-serif;
+      }
+      .winnerbox {
+        width: 450px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 2em;
+        font-weight: 800;
+      }
+      .board {
+        width: 458px;
+        height: 458px;
+      }
+      .box {
+        border: 2px solid grey;
+        width: 150px;
+        height: 150px;
+        float: left;
+        cursor: pointer;
+      }
+      .box:hover {
+        background-color: rgb(224, 236, 243);
+      }
+      #box0 {
+        border-style: none solid solid none;
+      }
+      #box1 {
+        border-style: none solid solid solid;
+      }
+      #box2 {
+        border-style: none none solid solid;
+      }
+      #box3 {
+        border-style: solid solid solid none;
+      }
+      #box5 {
+        border-style: solid none solid solid;
+      }
+      #box6 {
+        border-style: solid solid none none;
+      }
+      #box7 {
+        border-style: solid solid none solid;
+      }
+      #box8 {
+        border-style: solid none none solid;
+      }
+      .reset {
+        margin-top: 50px;
+        cursor: pointer;
+        padding: 5px 20px;
+        font-family: sans-serif;
+        font-size: 1em;
+        font-weight: 600;
+        color: grey;
+        outline: none;
+        border: 3px solid grey;
+        border-radius: 50px;
+        background-color: white;
+        transition: 0.3s ease;
+      }
+      .reset:hover {
+        transform: scale(1.05);
+      }
+      .filled {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 3em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="winnerbox">Tic-Tac-Toe</div>
+    <div class="board">
+      <div id="box0" class="box"></div>
+      <div id="box1" class="box"></div>
+      <div id="box2" class="box"></div>
+      <div id="box3" class="box"></div>
+      <div id="box4" class="box"></div>
+      <div id="box5" class="box"></div>
+      <div id="box6" class="box"></div>
+      <div id="box7" class="box"></div>
+      <div id="box8" class="box"></div>
+    </div>
+    <button class="reset" onclick="reset()">Restart</button>
+    <script>
+      const board = document.querySelector(".board");
+      const winnerbox = document.querySelector(".winnerbox");
+      let board_fill = ["", "", "", "", "", "", "", "", ""];
+      const player1 = '<img src="autobots-svgrepo-com.svg" width="50px">';
+      const player2 = '<img src="darth-vader-svgrepo-com.svg" width="50px">';
+      let is_player1 = true;
+      let is_finished = false;
+      let isWin = false;
+
+      const update_board = () => {
+        board.innerHTML = "";
+        board_fill.forEach((e, i) => {
+          board.innerHTML += `<div id="box${i}" class="box" onclick="add_move(${i})">${board_fill[i]}</div>`;
+          if (e == player1 || e == player2) {
+            document.querySelector(`#box${i}`).classList.add("filled");
+          }
+        });
+      };
+
+      const add_move = (location) => {
+        if (board_fill[location] == "" && is_finished == false) {
+          if (is_player1 == true) {
+            board_fill[location] = player1;
+            update_board();
+            check_winning(player1);
+            is_player1 = false;
+          } else if (is_player1 == false) {
+            board_fill[location] = player2;
+            update_board();
+            check_winning(player2);
+            is_player1 = true;
+          }
+        }
+      };
+
+      const check_winning = (player) => {
+        // Check Horizontal
+        for (i = 0; i <= 6; i += 3) {
+          for (j = i; j < i + 3; j++) {
+            if (board_fill[j] == player) {
+              isWin = true;
+              if (j == i + 2 && isWin == true) {
+                //PLAYER WINS
+                return declare_win(player);
+              }
+            } else {
+              isWin = false;
+              break;
+            }
+          }
+        }
+        //Check Vertical
+        for (i = 0; i < 3; i++) {
+          for (j = i; j <= i + 6; j += 3) {
+            if (board_fill[j] == player) {
+              isWin = true;
+              if (j == i + 6 && isWin == true) {
+                //PLAYER WINS
+                return declare_win(player);
+              }
+            } else {
+              isWin = false;
+              break;
+            }
+          }
+        }
+        //Check Diagonal
+        for (i = 0; i <= 8; i += 4) {
+          if (board_fill[i] == player) {
+            isWin = true;
+            if (i == 8 && isWin == true) {
+              //PLAYER WINS
+              return declare_win(player);
+            }
+          } else {
+            isWin = false;
+            break;
+          }
+        }
+        for (i = 2; i <= 6; i += 2) {
+          if (board_fill[i] == player) {
+            isWin = true;
+            if (i == 6 && isWin == true) {
+              //PLAYER WINS
+              return declare_win(player);
+            }
+          } else {
+            isWin = false;
+            break;
+          }
+        }
+      };
+
+      const declare_win = (player) => {
+        console.log(player + " Wins");
+        winnerbox.innerHTML = `${player} Wins!`;
+        is_finished = true;
+      };
+
+      const reset = () => {
+        board_fill = ["", "", "", "", "", "", "", "", ""];
+        is_finished = false;
+        winnerbox.innerHTML = `Tic-Tac-Toe`;
+        update_board();
+      };
+
+      reset();
+    </script>
+  </body>
+</html>
